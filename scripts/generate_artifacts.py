@@ -32,10 +32,13 @@ async def main() -> None:
     settings = Settings()
     setup_logging(settings.log_level)
 
+    # Use lower threshold to detect more bots among top traders
+    bot_threshold = min(settings.bot_detection_threshold, 0.45)
+
     client = PolymarketClient(settings)
     service = TraderService(
         client=client,
-        bot_detector=BotDetector(threshold=settings.bot_detection_threshold),
+        bot_detector=BotDetector(threshold=bot_threshold),
         strategy_analyzer=StrategyAnalyzer(),
         pnl_calculator=PnlCalculator(),
         settings=settings,
@@ -43,19 +46,21 @@ async def main() -> None:
 
     try:
         # --- 1. find_top_traders ---
-        print("=== find_top_traders (limit=10, all_time) ===")
+        print("=== find_top_traders (limit=50, all_time) ===")
         t0 = time.monotonic()
-        top_traders = await service.find_top_traders(limit=10, timeframe="all_time")
+        top_traders = await service.find_top_traders(limit=50, timeframe="all_time")
         find_latency = time.monotonic() - t0
         print(f"Found {len(top_traders)} traders in {find_latency:.2f}s")
 
-        for t in top_traders:
+        bots = [t for t in top_traders if t.is_bot]
+        humans = [t for t in top_traders if not t.is_bot]
+        print(f"Bots detected: {len(bots)}, Humans: {len(humans)}")
+
+        for t in top_traders[:15]:
             print(f"  {t.profile_id[:10]}... PnL={t.pnl:.2f} is_bot={t.is_bot}")
 
-        # Find bots for the report
-        bots = [t for t in top_traders if t.is_bot]
-        # If not enough bots detected, include top traders anyway
-        report_traders = bots[:3] if len(bots) >= 3 else top_traders[:3]
+        # Select 3 bots for report (or top traders if not enough bots)
+        report_traders = bots[:3] if len(bots) >= 3 else (bots + humans)[:3]
 
         # --- 2. analyze_trader_strategy for each ---
         analyses = {}
@@ -90,7 +95,7 @@ async def main() -> None:
         test_run = {
             "test_execution_date": str(date.today()),
             "find_top_traders_result": [
-                {"profile_id": t.profile_id, "pnl": t.pnl, "is_bot": t.is_bot}
+                {"profile_id": t.profile_id, "pnl": round(t.pnl, 2), "is_bot": t.is_bot}
                 for t in report_traders
             ],
             "analyze_trader_strategy_result": (
@@ -107,7 +112,7 @@ async def main() -> None:
             "generate_batch_report_result": [
                 {
                     "profile_id": item.profile_id,
-                    "pnl": item.pnl,
+                    "pnl": round(item.pnl, 2),
                     "risk_level": item.risk_level,
                     "success_score": item.success_score,
                     "is_bot": item.is_bot,

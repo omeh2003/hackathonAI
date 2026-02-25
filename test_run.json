@@ -1,0 +1,50 @@
+{
+  "test_execution_date": "2026-02-25",
+  "find_top_traders_result": [
+    {
+      "profile_id": "0x1f2dd6d473f3e824cd2f8a89d9c69fb96f6ad0cf",
+      "pnl": 16619506.63,
+      "is_bot": true
+    },
+    {
+      "profile_id": "0x78b9ac44a6d7d7a076c14e0ad518b301b63c6b76",
+      "pnl": 8709972.99,
+      "is_bot": true
+    },
+    {
+      "profile_id": "0x863134d00841b2e200492805a01e1e2f5defaa53",
+      "pnl": 7532409.67,
+      "is_bot": true
+    }
+  ],
+  "analyze_trader_strategy_result": {
+    "profile_id": "0x1f2dd6d473f3e824cd2f8a89d9c69fb96f6ad0cf",
+    "strategy_description": "Trader follows market trends, taking directional positions in markets showing momentum. Holds positions for average of 8 days and concentrates on 25 markets. Risk comes from trend reversals.",
+    "risk_level": "High",
+    "success_score": 6,
+    "is_bot": true
+  },
+  "generate_batch_report_result": [
+    {
+      "profile_id": "0x1f2dd6d473f3e824cd2f8a89d9c69fb96f6ad0cf",
+      "pnl": 16619506.63,
+      "risk_level": "High",
+      "success_score": 6,
+      "is_bot": true
+    },
+    {
+      "profile_id": "0x78b9ac44a6d7d7a076c14e0ad518b301b63c6b76",
+      "pnl": 8709972.99,
+      "risk_level": "High",
+      "success_score": 5,
+      "is_bot": true
+    },
+    {
+      "profile_id": "0x863134d00841b2e200492805a01e1e2f5defaa53",
+      "pnl": 7532409.67,
+      "risk_level": "High",
+      "success_score": 6,
+      "is_bot": true
+    }
+  ]
+}

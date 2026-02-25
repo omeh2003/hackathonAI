@@ -1,0 +1,17 @@
+[
+  {
+    "endpoint": "find_top_traders",
+    "architecture_description": "Fetches Polymarket leaderboard via data-api, then for each trader retrieves trade history and activity. Applies 5-factor heuristic bot detection (trade frequency, time regularity, 24h activity, size consistency, volume intensity). Stack: FastMCP, httpx, pydantic, structlog, tenacity.",
+    "implemented": true
+  },
+  {
+    "endpoint": "analyze_trader_strategy",
+    "architecture_description": "Resolves profile_id (@username or 0x wallet), fetches positions/trades/activity in parallel. Classifies strategy via rule-based behavioral profiling (arbitrage, market-making, scalping, event-driven, trend-following, diversified). Generates template-based description, risk assessment, and replication barrier score.",
+    "implemented": true
+  },
+  {
+    "endpoint": "generate_batch_report",
+    "architecture_description": "Parallel analysis of multiple trader profiles with asyncio.Semaphore concurrency control (MAX_CONCURRENCY from env). Composes analyze_trader for each profile, aggregates results with error isolation per profile.",
+    "implemented": true
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "metrics": {
+    "find_top_traders": {
+      "latency": "6.8s",
+      "status": "stable"
+    },
+    "analyze_trader_strategy": {
+      "latency": "173ms",
+      "status": "stable"
+    },
+    "generate_batch_report": {
+      "latency": "0.1s",
+      "status": "load_dependent"
+    }
+  }
+}

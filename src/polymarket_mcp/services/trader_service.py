@@ -150,8 +150,8 @@ class TraderService:
             async with semaphore:
                 wallet = await self._client.resolve_profile_id(pid)
                 analysis = await self.analyze_trader(pid)
-                positions = await self._client.get_positions(wallet)
-                pnl = self._pnl_calc.total_pnl(positions)
+                # Get PnL from leaderboard (more accurate than positions sum)
+                pnl = await self._get_leaderboard_pnl(wallet)
                 return BatchReportItem(
                     profile_id=pid,
                     pnl=pnl,
@@ -177,3 +177,20 @@ class TraderService:
             latency_ms=round(latency_ms, 1),
         )
         return items, latency_ms
+
+    async def _get_leaderboard_pnl(self, wallet: str) -> float:
+        """Get PnL from leaderboard API for accurate realized PnL."""
+        try:
+            data = await self._client.get_leaderboard(
+                time_period="ALL", limit=1,
+            )
+            # Search specific wallet in cached leaderboard
+            leaderboard = await self._client.get_leaderboard(time_period="ALL", limit=50)
+            for entry in leaderboard:
+                if entry.get("proxyWallet", "").lower() == wallet.lower():
+                    return float(entry.get("pnl", 0))
+        except Exception:
+            logger.warning("leaderboard_pnl_fallback", wallet=wallet)
+        # Fallback to positions-based PnL
+        positions = await self._client.get_positions(wallet)
+        return self._pnl_calc.total_pnl(positions)
