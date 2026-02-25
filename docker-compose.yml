@@ -1,0 +1,24 @@
+services:
+  mcp-server:
+    build: .
+    ports:
+      - "${MCP_PORT:-8000}:8000"
+    env_file:
+      - .env
+    environment:
+      - MCP_TRANSPORT=http
+      - PYTHONPATH=/app/src
+    restart: unless-stopped
+
+  artifact-generator:
+    build: .
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app/src
+    volumes:
+      - .:/app/output
+    working_dir: /app/output
+    command: ["python", "/app/scripts/generate_artifacts.py"]
+    profiles:
+      - tools
