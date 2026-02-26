@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
+from fastmcp import Context
 from pydantic import Field
 
 
@@ -21,9 +22,9 @@ def register(mcp):  # noqa: ANN001
             Literal["7d", "30d", "all_time"],
             Field(description="Leaderboard timeframe"),
         ] = "all_time",
-        ctx=None,
+        ctx: Context = None,
     ) -> list[dict]:
         """Find top Polymarket traders by PnL with bot detection."""
-        service = ctx.deps["trader_service"]
+        service = ctx.lifespan_context["trader_service"]
         results = await service.find_top_traders(limit=limit, timeframe=timeframe)
         return [r.model_dump() for r in results]

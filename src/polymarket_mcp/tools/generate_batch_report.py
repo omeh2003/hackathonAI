@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
+from fastmcp import Context
 from pydantic import Field
 
 
@@ -24,10 +25,10 @@ def register(mcp):  # noqa: ANN001
                 description="List of wallet addresses (0x...) or @usernames",
             ),
         ],
-        ctx=None,
+        ctx: Context = None,
     ) -> dict:
         """Generate batch analysis report for multiple traders."""
-        service = ctx.deps["trader_service"]
+        service = ctx.lifespan_context["trader_service"]
         items, latency_ms = await service.generate_batch_report(profile_ids)
         return {
             "results": [item.model_dump() for item in items],
