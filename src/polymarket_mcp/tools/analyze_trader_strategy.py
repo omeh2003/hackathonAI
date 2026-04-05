@@ -24,5 +24,10 @@ def register(mcp):  # noqa: ANN001
     ) -> dict:
         """Analyze a Polymarket trader's strategy and bot status."""
         service = ctx.lifespan_context["trader_service"]
-        result = await service.analyze_trader(profile_id=profile_id)
+        try:
+            result = await service.analyze_trader(profile_id=profile_id)
+        except ValueError as e:
+            return {"error": str(e)}
+        except Exception as e:
+            return {"error": f"Failed to analyze trader '{profile_id}': {e}"}
         return result.model_dump()

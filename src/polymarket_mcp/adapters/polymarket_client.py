@@ -87,7 +87,10 @@ class PolymarketClient:
             response = await client.get(path, params=params)
             response.raise_for_status()
             latency_ms = (time.monotonic() - start) * 1000
-            logger.info("api_response", path=path, status=response.status_code, latency_ms=round(latency_ms, 1))
+            logger.info(
+                "api_response", path=path, status=response.status_code,
+                latency_ms=round(latency_ms, 1),
+            )
             return response.json()
 
     # --- Public API methods ---
@@ -155,8 +158,6 @@ class PolymarketClient:
         for p in profiles:
             if p.get("name", "").lower() == username.lower():
                 return p["proxyWallet"]
-        if profiles:
-            return profiles[0]["proxyWallet"]
         raise ValueError(f"No profile found for username: {username}")
 
     async def close(self) -> None:

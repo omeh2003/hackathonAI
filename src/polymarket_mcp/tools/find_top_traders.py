@@ -26,5 +26,8 @@ def register(mcp):  # noqa: ANN001
     ) -> list[dict]:
         """Find top Polymarket traders by PnL with bot detection."""
         service = ctx.lifespan_context["trader_service"]
-        results = await service.find_top_traders(limit=limit, timeframe=timeframe)
+        try:
+            results = await service.find_top_traders(limit=limit, timeframe=timeframe)
+        except Exception as e:
+            return [{"error": f"Failed to fetch top traders: {e}"}]
         return [r.model_dump() for r in results]

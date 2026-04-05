@@ -29,7 +29,10 @@ def register(mcp):  # noqa: ANN001
     ) -> dict:
         """Generate batch analysis report for multiple traders."""
         service = ctx.lifespan_context["trader_service"]
-        items, latency_ms = await service.generate_batch_report(profile_ids)
+        try:
+            items, latency_ms = await service.generate_batch_report(profile_ids)
+        except Exception as e:
+            return {"error": f"Failed to generate batch report: {e}"}
         return {
             "results": [item.model_dump() for item in items],
             "total_latency_ms": round(latency_ms, 1),
